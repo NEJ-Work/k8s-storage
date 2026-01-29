@@ -4,28 +4,39 @@ metadata:
   name: hello
   namespace: default
 spec:
+  restartPolicy: OnFailure
+
   containers:
-
-  - name: busywriter # first container
+  - name: busywriter
     image: busybox:1.28
-    command: ['sh', '-c', 'while true; do echo "Hello, Kubernetes! $(date) >> /data/out.txt"; sleep 5; done;']
+    command:
+      - sh
+      - -c
+      - |
+        while true; do
+          echo "Hello, Kubernetes! $(date)" >> /data/out.txt
+          sleep 5
+        done
     volumeMounts:
-      mountPath: /data
-      name: file-share # both mounted to same volume
+      - name: file-share
+        mountPath: /data
 
-  - name: busyreader # second container
+  - name: busyreader
     image: busybox:1.28
-    command: ['sh', '-c', 'while true; do tail -f /read/out.txt || true; sleep 5; done;']
+    command:
+      - sh
+      - -c
+      - |
+        while true; do
+          tail -f /read/out.txt || true
+          sleep 5
+        done
     volumeMounts:
-      mountPath: /read # local mount location of the volume
-      name: file-share
-
-    restartPolicy: OnFailure
+      - name: file-share
+        mountPath: /read
 
   volumes:
-  - name: file-share # this is the volume
+  - name: file-share
     emptyDir:
       sizeLimit: 500Mi
       medium: Memory
-
-    # The pod template ends here
