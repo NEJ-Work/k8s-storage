@@ -13,7 +13,6 @@ spec:
       labels:
         app: hello
     spec:
-      restartPolicy: OnFailure
 
       containers:
       - name: busywriter
