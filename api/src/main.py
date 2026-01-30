@@ -1,13 +1,14 @@
 from fastapi import FastAPI, UploadFile, File, HTTPException
 import boto3
 from botocore.exceptions import BotoCoreError, ClientError
+import os
 
 app = FastAPI()
 
 # Initialize S3 client (uses environment variables or IAM role)
 s3 = boto3.client("s3")
 
-BUCKET_NAME = "your-bucket-name"
+BUCKET_NAME = os.getenv("S3_BUCKET","generic-bucket")
 
 @app.post("/upload")
 async def upload_file(file: UploadFile = File(...)):
